@@ -1,14 +1,11 @@
 function importAmerenData(_messages,_source) 
 {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(_source+"Import");
-  switch (sheet) 
-  {
-    case null:
+  
+  if (sheet === null) {
       let errormessage = "Unable to process data from source: "+_source+". Sheet not found."
       console.error(errormessage);
       return new Error(errormessage);
-    default:
-      break;
   }
   for(var i = 0; i < _messages.length; i++)
   {
@@ -18,5 +15,4 @@ function importAmerenData(_messages,_source)
 
     sheet.getRange(sheet.getLastRow()+1,1,data.length, data[0].length).setValues(data);
   }
-  
 }
