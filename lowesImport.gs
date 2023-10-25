@@ -1,15 +1,20 @@
-function importLowesData(_messages,_source)
+function importLowesData(messages,source)
 {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(_source+"Import");
+  var sheetName = source + "Import";
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+
+  // constants
   
   if (sheet === null) {
-      let errormessage = "Unable to process data from source: "+_source+". Sheet not found."
+      let errormessage = "Unable to process data from source: " + source + ". Sheet not found."
       console.error(errormessage);
       return new Error(errormessage);
   }
-  for (var i = 0; i < _messages.length; i++)
+
+  var data = [];
+  for (let i = 0; i < messages.length; i++)
   {
-    var msg = _messages[i].getPlainBody().toString();
+    var msg = messages[i].getPlainBody().toString();
     var layers = msg.split("*")[6].split("\n");
 
     var transnum = layers[5].split(" ")[3].trim();
@@ -41,9 +46,13 @@ function importLowesData(_messages,_source)
     for (var k = 0; k < description.length; k++)
     {
       var newTotal = totalPrice[k]*ratio;
-      var data = [[transnum,orderdate,description[k],totalPrice[k],qty[k],pricePer[k],newTotal]];
-
-      sheet.getRange(sheet.getLastRow()+1,1,data.length,data[0].length).setValues(data);
+      data.push([transnum,orderdate,description[k],totalPrice[k],qty[k],pricePer[k],newTotal]);
+    
     }
+  }
+
+  if (data.length > 0) {
+  var lastRow = sheet.getLastRow();
+  sheet.getRange(sheet.getLastRow()+1,1,data.length, data[0].length).setValues(data);
   }
 }
