@@ -6,7 +6,8 @@ function run() {
   var importedLabel = GmailApp.getUserLabelByName("Imports/Imported");
   
   if (importedLabel === null){
-    let errormessage = console.error("Imports/Imported label not found.");
+    let errormessage = "Imports/Imported label not found.";
+    console.error = (errormessage);
     errorlog.push(errormessage);
     return;
   }
@@ -25,8 +26,22 @@ function run() {
   }
   
   if (errorlog.length > 0) {
-    sendErrorEmail(errorlog);
+    var job = "House Data Import ";
+    var subject = "Error results from " + job;
+    sendErrorEmail(errorlog, subject, job);
   }
+}
+
+function getDataHandler(source) {
+  var handlers = {
+    "Ameren"    : importAmerenData,
+    "Lowes"     : importLowesData,
+    "Spire"     : importSpireData,
+    "HomeDepot" : importHomeDepotData,
+    // Step 2: define data handler
+    // Step 3: create new class and method for data handler
+  };
+  return handlers[source];
 }
 
 function myGetMessages(source, label, importedLabel) {
@@ -55,31 +70,4 @@ function myGetMessages(source, label, importedLabel) {
       thread.addLabel(importedLabel);
     }
   });
-}
-
-function getDataHandler(source) {
-  var handlers = {
-    "Ameren"    : importAmerenData,
-    "Lowes"     : importLowesData,
-    "Spire"     : importSpireData,
-    "HomeDepot" : importHomeDepotData,
-    // Step 2: define data handler
-    // Step 3: create new class and method for data handler
-  };
-  return handlers[source];
-}
-
-function sendErrorEmail(errorlog) {
-  var currentTime = new Date();
-  var formattedTime = Utilities.formatDate(currentTime, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
-  var recipient = Session.getEffectiveUser().getEmail();
-  var subject = "Error results from House Data Import Job";
-  var body = "Job Time: " + formattedTime + 
-  "\nThe follow error(s) occured while running the House Data Import Job:\n\n"; 
-  for (let i = 0; i < errorlog.length; i++)
-  {
-    body += errorlog[i] + "\n";
-  }
-
-  MailApp.sendEmail(recipient, subject, body);
 }

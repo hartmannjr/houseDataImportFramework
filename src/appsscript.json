@@ -1,0 +1,13 @@
+{
+  "timeZone": "America/Chicago",
+  "dependencies": {
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "sheets": {
+    "macros": [{
+      "menuName": "run",
+      "functionName": "run"
+    }]
+  }
+}
